@@ -1,6 +1,6 @@
 // Offline cache: app shell precached, images and data cached on first use.
-const VERSION = 'v1';
-const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'store.js', 'config.js', 'manifest.webmanifest', 'data/seed.json', 'icons/icon-192.png'];
+const VERSION = 'v2';
+const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'store.js', 'config.js', 'manifest.webmanifest', 'data/seed.json', 'data/awaken2.json', 'icons/icon-192.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open('shell-' + VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));

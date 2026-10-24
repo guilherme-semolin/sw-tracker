@@ -22,6 +22,10 @@ try { prefs = { ...prefs, ...JSON.parse(localStorage.getItem(PREFS_KEY) || '{}')
 const savePrefs = () => { try { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch {} };
 let query = '';
 
+// 1A monster id -> 2nd-awakening icon (data/awaken2.json)
+let AWAKEN2 = {};
+const imgOf = (e) => (e.a2 && e.mid && AWAKEN2[e.mid]) || e.img;
+
 const stars = (e) => (e.s6 ? 6 : e.s5 ? 5 : e.nat || 0);
 const starStr = (e) => '★'.repeat(stars(e)) + `<span class="d">${'★'.repeat(Math.max(0, 6 - stars(e)))}</span>`;
 
@@ -57,7 +61,7 @@ function itemHTML(e) {
     : '';
   return `<button class="item" data-id="${esc(e.id)}">
     ${showNum ? `<span class="num">${e.ordem ? e.ordem : '–'}</span>` : ''}
-    <span class="av"><img src="img/${esc(e.img)}" alt="" loading="lazy" decoding="async"><span class="el" style="background:${EL_COLOR[e.el] || '#888'}"></span></span>
+    <span class="av"><img src="img/${esc(imgOf(e))}" alt="" loading="lazy" decoding="async"><span class="el" style="background:${EL_COLOR[e.el] || '#888'}"></span></span>
     <span class="info"><div class="nm">${esc(e.nome)}</div><div class="stars">${starStr(e)}</div><div class="meta">${esc(e.el)} · ${esc(e.cat || '—')}${e.a1 === false ? ' · não desp.' : ''}</div></span>
     <span class="tags">${tags}</span></button>`;
 }
@@ -151,15 +155,14 @@ function toast(msg) {
 
 function detailHTML(e) {
   const st = stars(e);
-  const tg = (k, label) => {
-    const na = e[k] === null;
-    return `<button class="tg" data-flag="${k}"><span>${label}${na ? ' <small style="color:var(--mut)">(não existe)</small>' : ''}</span><span class="sw ${e[k] ? 'on' : ''} ${na ? 'na' : ''}"></span></button>`;
-  };
+  // A null flag means the option doesn't exist for this monster (e.g. no 2nd awakening): hide it.
+  const tg = (k, label) => (e[k] === null ? '' :
+    `<button class="tg" data-flag="${k}"><span>${label}</span><span class="sw ${e[k] ? 'on' : ''}"></span></button>`);
   const statusSeg = [['tenho', 'Tenho'], ['quero', 'Quero'], ['nao', 'Não tenho']]
     .map(([v, l]) => `<button data-status="${v}" class="${e.status === v ? 'on' : ''}">${l}</button>`).join('');
   const copies = S.all().filter((x) => x.mid && x.mid === e.mid && x.status === 'tenho').length;
   return `<div class="shead"><span></span><button class="link" data-close>Fechar</button></div>
-    <div class="hero"><img src="img/${esc(e.img)}" alt=""><h2>${esc(e.nome)}</h2>
+    <div class="hero"><img src="img/${esc(imgOf(e))}" alt=""><h2>${esc(e.nome)}</h2>
       <span class="pill" style="color:${EL_COLOR[e.el]}">● ${esc(e.el)}</span><span class="pill">${esc(e.cat || '—')}</span><span class="pill">Natural ${e.nat}★</span>
       ${e.ordem ? `<span class="pill">#${e.ordem} no 6★</span>` : ''}${copies > 1 ? `<span class="pill">${copies} cópias</span>` : ''}</div>
     <div class="seg">${statusSeg}</div>
@@ -187,6 +190,7 @@ function openDetail(id) {
     if (!t || !e) return;
     if (t.dataset.flag) {
       const k = t.dataset.flag;
+      if (e[k] === null) return;
       const patch = { [k]: !e[k] };
       S.update(id, patch);
     } else if (t.dataset.star) {
@@ -349,6 +353,7 @@ function wire() {
 
 async function main() {
   await S.load();
+  try { AWAKEN2 = await (await fetch('data/awaken2.json')).json(); } catch {}
   if (!TITLES[prefs.tab]) prefs.tab = 'tenho';
   prefs.filters = { ...blankFilters(), ...prefs.filters };
   wire(); render();
