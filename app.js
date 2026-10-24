@@ -55,8 +55,8 @@ function filtered() {
 function itemHTML(e) {
   const showNum = prefs.tab === 'tenho' && prefs.sort === 'ordem';
   const tags = e.status === 'tenho'
-    ? [['runa', 'Runa'], ['skill', 'Skill'], ['art', 'Art'], ['rel', 'Rel'], ['a2', '2A']]
-        .filter(([k]) => e[k] !== null && !(k === 'rel' && !e.rel))
+    ? [['skill', 'Skill'], ['runa', 'Runa'], ['art', 'Art'], ['rel', 'Rel'], ['a1', '1A'], ['a2', '2A']]
+        .filter(([k]) => e[k] !== null)
         .map(([k, l]) => `<span class="t ${e[k] ? 'y' : ''}">${l}</span>`).join('')
     : '';
   return `<button class="item" data-id="${esc(e.id)}">

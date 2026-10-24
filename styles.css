@@ -44,7 +44,8 @@ h1{font-size:28px;font-weight:800;letter-spacing:-.5px}
 .meta{font-size:11px;color:var(--mut)}
 .stars{color:var(--gold);font-size:11px;letter-spacing:-1px}
 .stars .d{color:var(--no)}
-.tags{display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end;max-width:104px}
+.tags{display:grid;grid-template-columns:repeat(3,auto);gap:3px;justify-content:end;flex:none}
+.t{text-align:center}
 .t{font-size:9.5px;font-weight:700;padding:2px 5px;border-radius:5px;background:var(--no);color:#aeb1d0}
 .t.y{background:#3ddc9722;color:var(--ok)}
 .empty{text-align:center;color:var(--mut);padding:40px 10px}
