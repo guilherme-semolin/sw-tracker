@@ -100,3 +100,5 @@ textarea{min-height:70px;resize:vertical}
 .card h3{font-size:16px;margin-bottom:6px}
 .card p{font-size:13px;color:var(--mut);line-height:1.45}
 .toast{position:fixed;left:50%;bottom:calc(90px + var(--safe-b));transform:translateX(-50%);background:#2b2e4a;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:20;box-shadow:0 6px 20px #0008;max-width:90vw}
+.card .inp,.card .btn.sec{background:var(--bg)}
+.card h3{display:flex;gap:6px;align-items:center}
