@@ -11,6 +11,8 @@ button{background:none;border:0;cursor:pointer}
 #app{max-width:640px;margin:0 auto;min-height:100vh}
 
 #top{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(var(--safe-t) + 10px) 16px 8px}
+.banner{display:flex;gap:8px;align-items:flex-start;width:100%;text-align:left;background:#ff8a4a22;border:1px solid #ff8a4a66;color:#ffc7a8;border-radius:12px;padding:9px 11px;margin-bottom:8px;font-size:13px;line-height:1.35}
+.banner b{color:#ffd9c2}
 .titlebar{display:flex;align-items:center;justify-content:space-between}
 h1{font-size:28px;font-weight:800;letter-spacing:-.5px}
 .sync{width:10px;height:10px;border-radius:50%;background:var(--no)}

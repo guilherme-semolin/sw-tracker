@@ -325,6 +325,7 @@ function wire() {
   $('#list').addEventListener('click', (ev) => { const b = ev.target.closest('.item'); if (b) openDetail(b.dataset.id); });
   let qt; $('#q').addEventListener('input', (ev) => { clearTimeout(qt); qt = setTimeout(() => { query = ev.target.value; renderList(); }, 120); });
   $('#btnFilter').addEventListener('click', openFilters);
+  $('#logoutBanner').addEventListener('click', () => { prefs.tab = 'ajustes'; savePrefs(); render(); window.scrollTo(0, 0); });
   $('#chips').addEventListener('click', (ev) => {
     const b = ev.target.closest('[data-chip]'); if (!b) return;
     const [g, v] = b.dataset.chip.split(':'); const f = prefs.filters;
@@ -346,6 +347,7 @@ function wire() {
   let rt;
   S.onChange(() => { clearTimeout(rt); rt = setTimeout(() => { if (prefs.tab !== 'ajustes') { renderStats(); renderList(); } }, 50); });
   S.onSync((state) => {
+    $('#logoutBanner').hidden = state !== 'logged-out';
     $('#syncDot').className = 'sync ' + ({ on: 'on', busy: 'busy', err: 'err' }[state] || '');
     if (prefs.tab === 'ajustes') renderSettings();
   });
