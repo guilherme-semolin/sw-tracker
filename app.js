@@ -325,7 +325,7 @@ function wire() {
   $('#list').addEventListener('click', (ev) => { const b = ev.target.closest('.item'); if (b) openDetail(b.dataset.id); });
   let qt; $('#q').addEventListener('input', (ev) => { clearTimeout(qt); qt = setTimeout(() => { query = ev.target.value; renderList(); }, 120); });
   $('#btnFilter').addEventListener('click', openFilters);
-  $('#logoutBanner').addEventListener('click', () => { prefs.tab = 'ajustes'; savePrefs(); render(); window.scrollTo(0, 0); });
+  $('#logoutBanner')?.addEventListener('click', () => { prefs.tab = 'ajustes'; savePrefs(); render(); window.scrollTo(0, 0); });
   $('#chips').addEventListener('click', (ev) => {
     const b = ev.target.closest('[data-chip]'); if (!b) return;
     const [g, v] = b.dataset.chip.split(':'); const f = prefs.filters;
@@ -347,7 +347,8 @@ function wire() {
   let rt;
   S.onChange(() => { clearTimeout(rt); rt = setTimeout(() => { if (prefs.tab !== 'ajustes') { renderStats(); renderList(); } }, 50); });
   S.onSync((state) => {
-    $('#logoutBanner').hidden = state !== 'logged-out';
+    const banner = $('#logoutBanner');
+    if (banner) banner.hidden = state !== 'logged-out';
     $('#syncDot').className = 'sync ' + ({ on: 'on', busy: 'busy', err: 'err' }[state] || '');
     if (prefs.tab === 'ajustes') renderSettings();
   });
@@ -360,6 +361,12 @@ async function main() {
   prefs.filters = { ...blankFilters(), ...prefs.filters };
   wire(); render();
   S.initSync();
-  if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => {});
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((reg) => reg.update()).catch(() => {});
+    // When a new version takes over, reload once so the screen shows it.
+    let reloaded = false;
+    const hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController && !reloaded) { reloaded = true; location.reload(); } });
+  }
 }
 main();

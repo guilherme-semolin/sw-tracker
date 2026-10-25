@@ -1,9 +1,9 @@
 // Offline cache: app shell precached, images and data cached on first use.
-const VERSION = 'v5';
+const VERSION = 'v7';
 const SHELL = ['./', 'index.html', 'styles.css', 'app.js', 'store.js', 'config.js', 'manifest.webmanifest', 'data/seed.json', 'data/awaken2.json', 'icons/icon-192.png'];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open('shell-' + VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open('shell-' + VERSION).then((c) => c.addAll(SHELL.map((u) => new Request(u, { cache: 'no-cache' })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {
@@ -20,8 +20,10 @@ self.addEventListener('fetch', (e) => {
     return;
   }
   // Everything else: network-first, fall back to cache when offline.
+  // Same-origin files skip the browser's HTTP cache (GitHub Pages caches 10 min) so updates show up at once.
+  const req = url.origin === location.origin ? fetch(url.href, { cache: 'no-cache', credentials: 'same-origin' }) : fetch(e.request);
   e.respondWith(
-    fetch(e.request).then((r) => {
+    req.then((r) => {
       if (r.ok && (url.origin === location.origin || url.hostname === 'cdn.jsdelivr.net')) {
         const copy = r.clone(); caches.open('shell-' + VERSION).then((c) => c.put(e.request, copy));
       }
